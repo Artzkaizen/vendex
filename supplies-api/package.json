@@ -1,0 +1,52 @@
+{
+	"name": "supplies",
+	"type": "module",
+	"version": "1.0.0",
+	"packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b",
+	"scripts": {
+		"dev": "tsx watch src/index.ts",
+		"db:migrate": "drizzle-kit generate",
+		"db:push": "drizzle-kit push",
+		"db:seed": "tsx main.ts",
+		"db:studio": "drizzle-kit studio",
+		"lint": "eslint .",
+		"test": "cross-env LOG_LEVEL=silent vitest --config vitest.config.ts",
+		"test:linux": "vitest",
+		"lint:fix": "eslint . --fix"
+	},
+	"dependencies": {
+		"@faker-js/faker": "^9.1.0",
+		"@hono/node-server": "^1.13.2",
+		"@hono/zod-openapi": "^0.16.4",
+		"@libsql/client": "^0.14.0",
+		"@scalar/hono-api-reference": "^0.5.155",
+		"@supabase/supabase-js": "^2.45.6",
+		"bcrypt": "^5.1.1",
+		"dotenv": "^16.4.5",
+		"dotenv-expand": "^11.0.6",
+		"drizzle-orm": "^0.35.3",
+		"drizzle-zod": "^0.5.1",
+		"google-auth-library": "^9.14.2",
+		"googleapis": "^144.0.0",
+		"hono": "^4.6.5",
+		"hono-pino": "^0.3.0",
+		"pino": "^9.5.0",
+		"pino-pretty": "^11.3.0",
+		"postgres": "^3.4.4",
+		"resend": "^4.0.0",
+		"stripe": "^17.3.0",
+		"vite-tsconfig-paths": "^5.0.1",
+		"zod": "^3.23.8"
+	},
+	"devDependencies": {
+		"@antfu/eslint-config": "^3.8.0",
+		"@types/bcrypt": "^5.0.2",
+		"@types/node": "^20.11.17",
+		"cross-env": "^7.0.3",
+		"drizzle-kit": "^0.26.2",
+		"eslint": "^9.12.0",
+		"eslint-plugin-format": "^0.1.2",
+		"tsx": "^4.7.1",
+		"vitest": "^2.1.3"
+	}
+}
