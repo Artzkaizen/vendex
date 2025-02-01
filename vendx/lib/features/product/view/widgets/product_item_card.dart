@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:vendx/features/product/model/products.dart';
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
+import 'package:vendx/utlis/constants/env.dart';
+import 'package:vendx/utlis/constants/images.dart';
 import 'package:vendx/utlis/helpers/currency_formatter.dart';
 
 class ProductItemCard extends StatelessWidget {
@@ -18,7 +20,7 @@ class ProductItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.pushNamed(Routes.productPage, extra: product),
+      onTap: () => context.pushNamed(Routes.products, extra: product),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -29,7 +31,7 @@ class ProductItemCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withAlpha(50),
               blurRadius: 10.0,
               spreadRadius: 5.0,
             ),
@@ -40,14 +42,16 @@ class ProductItemCard extends StatelessWidget {
           children: [
             Container(
               height: 120,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.vertical(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(10.0),
                 ),
                 image: DecorationImage(
-                  image: NetworkImage(
-                    'https://picsum.photos/200/300',
-                  ),
+                  image: (product.images?.isEmpty ?? true)
+                      ? const AssetImage(VendxImages.imgPlaceholder)
+                      : NetworkImage(
+                          '${Env.apiBaseUrl}${product.images?.first.url}',
+                        ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -64,7 +68,7 @@ class ProductItemCard extends StatelessWidget {
                         children: [
                           Text(
                             product.name,
-                            style: Theme.of(context).textTheme.labelLarge,
+                            style: Theme.of(context).textTheme.labelSmall,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -72,12 +76,12 @@ class ProductItemCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                formatCurrency(double.parse(product.price)),
-                                style: Theme.of(context).textTheme.labelLarge,
+                                formatCurrency(product.price.netPrice),
+                                style: Theme.of(context).textTheme.labelSmall,
                               ),
                               Container(
-                                height: 48,
-                                width: 48,
+                                height: 32,
+                                width: 32,
                                 decoration: const BoxDecoration(
                                   color: VendxColors.primary900,
                                   shape: BoxShape.circle,

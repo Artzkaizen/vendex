@@ -69,8 +69,8 @@ class HomeScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   TextButton(
-                    onPressed: () => context.pushNamed(Routes.productPage,
-                        extra: ProductModel),
+                    onPressed: () =>
+                        context.pushNamed(Routes.products, extra: ProductModel),
                     child: Text(
                       'View all',
                       style: TextStyle(

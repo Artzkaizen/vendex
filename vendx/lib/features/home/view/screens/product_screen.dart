@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vendx/features/cart/controller/cart_state.dart';
 import 'package:vendx/features/product/model/products.dart';
 import 'package:vendx/features/home/view/widgets/buy_now_btn.dart';
+import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
+import 'package:vendx/utlis/constants/env.dart';
+import 'package:vendx/utlis/constants/images.dart';
 import 'package:vendx/utlis/helpers/currency_formatter.dart';
 import 'package:vendx/utlis/helpers/screen_utils.dart';
 
@@ -24,6 +28,13 @@ class ProductScreen extends StatelessWidget {
     final Color color = Theme.of(context).brightness == Brightness.dark
         ? VendxColors.neutral900
         : VendxColors.primary50;
+
+    final List<String> imageUrls =
+        product.images?.map((image) => Env.apiBaseUrl + image.url).toList() ??
+            [];
+
+    debugPrint('ProductScreen: imageUrls: $imageUrls');
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -44,15 +55,29 @@ class ProductScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               height: VendxScreenUtils.height(40),
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://picsum.photos/200/300',
-                  ),
-                  fit: BoxFit.cover,
-                ),
+              child: PageView.builder(
+                itemCount: imageUrls.length,
+                itemBuilder: (context, index) {
+                  return (imageUrls.isNotEmpty
+                      ? Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(imageUrls[index]),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(VendxImages.imgPlaceholder),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ));
+                },
               ),
             ),
             Expanded(
@@ -65,7 +90,7 @@ class ProductScreen extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       blurRadius: 10.0,
                       spreadRadius: 5.0,
                     ),
@@ -78,55 +103,51 @@ class ProductScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          product.name,
-                          style: Theme.of(context).textTheme.displaySmall,
+                        Flexible(
+                          child: Text(
+                            product.name,
+                            style: Theme.of(context).textTheme.displaySmall,
+                            overflow: TextOverflow.visible,
+                          ),
                         ),
                         Text(
-                          formatCurrency(double.parse(product.price)),
+                          formatCurrency(product.price.netPrice),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ],
                     ),
                     const SizedBox(height: 16.0),
-                    Text(
-                      'Product Description',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Product Description',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text(
+                              product.description,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 2.0),
+                          ],
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 4.0),
-                    Text(
-                      product.description,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const Spacer(),
                     SafeArea(
                       child: Obx(() {
                         return BuyNowButton(
                           quantity: cart.getItemQuantity(product),
                           onBuyNow: () {
                             cart.manageItem(product, 'add');
+                            context.pushNamed(Routes.cartPage);
                           },
                           onAddQuantity: () {},
                         );
                       }),
                     ),
-                    const SizedBox(height: 16.0),
-                    Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(10.0),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            blurRadius: 10.0,
-                            spreadRadius: 5.0,
-                          ),
-                        ],
-                      ),
-                    ))
                   ],
                 ),
               ),

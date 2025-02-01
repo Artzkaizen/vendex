@@ -61,7 +61,7 @@ class CartScreen extends StatelessWidget {
                                 controller.manageItem(item.product, 'remove'),
                           ),
                           const Spacer(),
-                          Text(formatCurrency(double.parse(item.product.price)),
+                          Text(formatCurrency(item.product.price.netPrice),
                               style: Theme.of(context).textTheme.labelMedium),
                         ],
                       ),

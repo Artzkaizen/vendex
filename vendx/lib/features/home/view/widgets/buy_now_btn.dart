@@ -72,7 +72,7 @@ class BuyNowButton extends StatelessWidget {
               if (quantity > 0)
                 Positioned(
                   right: -1,
-                  top: -4,
+                  top: -2,
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: const BoxDecoration(

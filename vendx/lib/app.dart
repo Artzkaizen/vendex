@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     VendxScreenUtils().init(context);
     return MaterialApp.router(
-      routerConfig: router,
+      routerConfig: AppRouter.router,
       builder: (context, child) => GetMaterialApp(
         title: 'Vendx',
         theme: VendxAppTheme.light,

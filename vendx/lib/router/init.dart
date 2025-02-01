@@ -6,93 +6,19 @@ import 'package:vendx/features/auth/view/screens/onboarding.dart';
 import 'package:vendx/features/auth/view/screens/signup.dart';
 
 import 'package:vendx/features/cart/view/screens/cart.dart';
+import 'package:vendx/features/orders/model/order.dart';
+import 'package:vendx/features/orders/view/screens/orders.dart';
+import 'package:vendx/features/orders/view/screens/new.dart';
 import 'package:vendx/features/product/model/products.dart';
 
 import 'package:vendx/features/home/view/screens/favourites.dart';
 import 'package:vendx/features/home/view/screens/home.dart';
-import 'package:vendx/features/home/view/screens/orders.dart';
+
 import 'package:vendx/features/home/view/screens/product_screen.dart';
 
 import 'package:vendx/router/routes.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-final router = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: '/',
-  debugLogDiagnostics: true,
-  routes: [
-    GoRoute(
-      path: "/",
-      builder: (BuildContext context, GoRouterState state) =>
-          const Onboarding(),
-    ),
-    GoRoute(
-      path: '/auth/login',
-      builder: (BuildContext context, GoRouterState state) =>
-          const LoginScreen(),
-    ),
-    GoRoute(
-      path: '/auth/sign-up',
-      builder: (BuildContext context, GoRouterState state) =>
-          const SignupScreen(),
-    ),
-    GoRoute(
-      name: 'cart-single',
-      path: '/cart/single',
-      builder: (context, state) => CartScreen(),
-    ),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) => LayoutScaffold(
-        navigationShell: navigationShell,
-      ),
-      branches: [
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-                path: Routes.homePage,
-                builder: (context, state) => const HomeScreen(),
-                routes: [
-                  GoRoute(
-                    parentNavigatorKey: _rootNavigatorKey,
-                    name: 'products',
-                    path: "/product",
-                    builder: (context, state) => ProductScreen(
-                      // productId: state.pathParameters['productId']!,
-                      product: state.extra as ProductModel,
-                      // category: state.uri.queryParameters['category'],
-                    ),
-                  ),
-                ]),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Routes.ordersPage,
-              builder: (context, state) => const OrdersScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Routes.favoritePage,
-              builder: (context, state) => const FavouritesScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Routes.cartPage,
-              builder: (context, state) => CartScreen(),
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);
 
 class LayoutScaffold extends StatelessWidget {
   const LayoutScaffold({
@@ -186,7 +112,11 @@ class AppRoutes {
 
   static const home = HomeRoute();
   static const cart = CartRoute();
+
+  static const orders = OrdersRoute();
+
   static const profile = ProfileRoute();
+  static const success = SuccessRoute();
 
   static ProductRoute product({required String id, String? category}) =>
       ProductRoute(id: id, category: category);
@@ -236,12 +166,16 @@ class ForgotPasswordRoute extends AppRoute {
   const ForgotPasswordRoute() : super(path: '/auth/forgot-password');
 }
 
+class SuccessRoute extends AppRoute {
+  const SuccessRoute() : super(path: '/success');
+}
+
 class ResetPasswordRoute extends AppRoute {
   const ResetPasswordRoute() : super(path: '/auth/reset-password');
 }
 
-class DetailsRoute extends AppRoute {
-  const DetailsRoute() : super(path: '/details');
+class OrdersRoute extends AppRoute {
+  const OrdersRoute() : super(path: '/orders');
 }
 
 class ProfileRoute extends AppRoute {
@@ -272,7 +206,7 @@ class SharedLayout extends StatelessWidget {
 final class AppRouter {
   static final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: "/",
+    initialLocation: '/',
     routes: [
       GoRoute(
         path: "/",
@@ -289,6 +223,16 @@ final class AppRouter {
         builder: (BuildContext context, GoRouterState state) =>
             const SignupScreen(),
       ),
+      GoRoute(
+        name: Routes.cartPage,
+        path: Routes.cartPage,
+        builder: (context, state) => CartScreen(),
+      ),
+      GoRoute(
+        name: AppRoutes.success.path,
+        path: AppRoutes.success.path,
+        builder: (context, state) => CartScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => LayoutScaffold(
           navigationShell: navigationShell,
@@ -297,17 +241,35 @@ final class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: Routes.homePage,
-                builder: (context, state) => const HomeScreen(),
-              ),
+                  path: AppRoutes.home.path,
+                  builder: (context, state) => const HomeScreen(),
+                  routes: [
+                    GoRoute(
+                      parentNavigatorKey: _rootNavigatorKey,
+                      name: Routes.products,
+                      path: Routes.products,
+                      builder: (context, state) => ProductScreen(
+                        product: state.extra as ProductModel,
+                      ),
+                    ),
+                  ]),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: Routes.ordersPage,
-                builder: (context, state) => const OrdersScreen(),
-              ),
+                  path: AppRoutes.orders.path,
+                  builder: (context, state) => OrdersScreen(),
+                  routes: [
+                    GoRoute(
+                      parentNavigatorKey: _rootNavigatorKey,
+                      name: Routes.orderDetails,
+                      path: Routes.orderDetails,
+                      builder: (context, state) => SingleOrderScreen(
+                        order: state.extra as OrderModel,
+                      ),
+                    )
+                  ]),
             ],
           ),
           StatefulShellBranch(
@@ -318,66 +280,8 @@ final class AppRouter {
               ),
             ],
           ),
-          // StatefulShellBranch(
-          //   routes: [
-          //     GoRoute(
-          //       path: Routes.cartPage,
-          //       builder: (context, state) => CartScreen(),
-          //     ),
-          //   ],
-          // ),
-          // StatefulShellBranch(
-          //   routes: [
-          //     GoRoute(
-          //       path: Routes.settingsPage,
-          //       builder: (context, state) => const SettingsPage(),
-          //       routes: [
-          //         GoRoute(
-          //             path: Routes.profilePage,
-          //             builder: (context, state) => ProfilePage(
-          //                   user: state.extra as User,
-          //                 )),
-          //       ],
-          //     ),
-          //   ],
-          // ),
         ],
       ),
-
-      // GoRoute(
-      //   path: const ProductRoute(id: ':id').path,
-      //   builder: (context, state) {
-      //     final productId = state.pathParameters['id']!;
-      //     final category = state.uri.queryParameters['category'];
-
-      //     return ProductDetailPage(
-      //       productId: productId,
-      //       category: category,
-      //     );
-      //   },
-      // ),
-      // GoRoute(
-      //   path: const CategoryRoute(id: ':id').path,
-      //   builder: (context, state) {
-      //     final categoryId = state.pathParameters['id']!;
-      //     return CategoryPage(categoryId: categoryId);
-      //   },
-      // ),
-      // GoRoute(
-      //   path: const CartRoute().path,
-      //   builder: (context, state) => const CartPage(),
-      // ),
-      // GoRoute(
-      //   path: const ProfileRoute().path,
-      //   builder: (context, state) => const ProfilePage(),
-      // ),
-      // GoRoute(
-      //   path: const OrderDetailsRoute(orderId: ':orderId').path,
-      //   builder: (context, state) {
-      //     final orderId = state.pathParameters['orderId']!;
-      //     return OrderDetailsPage(orderId: orderId);
-      //   },
-      // ),
     ],
     // errorBuilder: (context, state) => const NotFoundPage(),
   );

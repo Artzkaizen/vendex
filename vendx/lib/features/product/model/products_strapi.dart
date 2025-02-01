@@ -40,13 +40,10 @@ class ProductModel {
       publishedAt: DateTime.parse(json['publishedAt']),
       productStatus: json['productStatus'],
       price: Price.fromJson(json['price']),
-      category: List<Category>.from(
-          json['category'].map((x) => Category.fromJson(x))),
+      category: List<Category>.from(json['category'].map((x) => Category.fromJson(x))),
       ratings: List<dynamic>.from(json['ratings']),
       tags: List<Tag>.from(json['tags'].map((x) => Tag.fromJson(x))),
-      images: json['images'] != null
-          ? List<Image>.from(json['images'].map((x) => Image.fromJson(x)))
-          : null,
+      images: json['images'] != null ? List<Image>.from(json['images'].map((x) => Image.fromJson(x))) : null,
     );
   }
 }
@@ -194,8 +191,7 @@ class Formats {
 
   factory Formats.fromJson(Map<String, dynamic> json) {
     return Formats(
-      thumbnail:
-          json['thumbnail'] != null ? Format.fromJson(json['thumbnail']) : null,
+      thumbnail: json['thumbnail'] != null ? Format.fromJson(json['thumbnail']) : null,
       small: json['small'] != null ? Format.fromJson(json['small']) : null,
       medium: json['medium'] != null ? Format.fromJson(json['medium']) : null,
       large: json['large'] != null ? Format.fromJson(json['large']) : null,

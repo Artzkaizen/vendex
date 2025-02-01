@@ -17,7 +17,7 @@ class VendxTextTheme {
         color: textColor,
       ),
       displaySmall: GoogleFonts.plusJakartaSans(
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: FontWeight.bold,
         letterSpacing: -0.25,
         color: textColor,

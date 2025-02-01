@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
 import 'package:vendx/features/cart/controller/cart_state.dart';
+import 'package:vendx/router/routes.dart';
 
 class CartBadge extends StatelessWidget {
   const CartBadge({super.key});
@@ -16,13 +18,13 @@ class CartBadge extends StatelessWidget {
         child: Stack(
           children: [
             IconButton(
-              icon: const Icon(Icons.shopping_cart_outlined, size: 30),
-              onPressed: () => context.pushNamed('cart-single'),
+              icon: const Icon(CupertinoIcons.bag, size: 30),
+              onPressed: () => context.pushNamed(Routes.cartPage),
             ),
             Obx(() {
               if (cartState.totalQuantity > 0) {
                 return Positioned(
-                  right: 0,
+                  right: 6,
                   child: Container(
                     padding: const EdgeInsets.all(1),
                     decoration: BoxDecoration(

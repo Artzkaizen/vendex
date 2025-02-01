@@ -38,7 +38,7 @@ class CartState extends GetxController {
   double getTotalAmount() {
     return _items.fold<double>(
       0.0,
-      (sum, item) => sum + (double.parse(item.product.price) * item.quantity),
+      (sum, item) => sum + (item.product.price.netPrice * item.quantity),
     );
   }
 
@@ -116,9 +116,10 @@ class CartState extends GetxController {
       // Success flow
       Get.snackbar('Success', 'Payment completed successfully!',
           snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
-
       // Clear the cart after successful payment
       _items.clear();
+      // Navigate to a success page
+      // Get.toNamed('/success');
     } catch (e) {
       // Handle errors
       if (e is StripeException) {

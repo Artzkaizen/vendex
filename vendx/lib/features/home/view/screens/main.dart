@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vendx/features/home/view/screens/favourites.dart';
 import 'package:vendx/features/home/view/screens/home.dart';
-import 'package:vendx/features/home/view/screens/orders.dart';
+
+import 'package:vendx/features/orders/view/screens/orders.dart';
 
 class CategoryList extends StatelessWidget {
   CategoryList({super.key});
@@ -154,7 +155,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const HomeScreen(),
-    const OrdersScreen(),
+    OrdersScreen(),
     const FavouritesScreen(),
     // CartScreen(),
   ];
@@ -203,11 +204,11 @@ class _HomePageState extends State<HomePage> {
               activeIcon: Icon(Icons.favorite),
               label: 'Favorites',
             ),
-            // BottomNavigationBarItem(
-            //   icon: Icon(Icons.shopping_cart_outlined),
-            //   activeIcon: Icon(Icons.shopping_cart),
-            //   label: 'Cart',
-            // ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart_outlined),
+              activeIcon: Icon(Icons.shopping_cart),
+              label: 'Cart',
+            ),
           ],
         ),
       ),
