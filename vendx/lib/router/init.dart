@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:vendx/features/auth/view/screens/login.dart';
@@ -6,6 +6,7 @@ import 'package:vendx/features/auth/view/screens/onboarding.dart';
 import 'package:vendx/features/auth/view/screens/signup.dart';
 
 import 'package:vendx/features/cart/view/screens/cart.dart';
+import 'package:vendx/features/home/view/screens/user.dart';
 import 'package:vendx/features/orders/model/order.dart';
 import 'package:vendx/features/orders/view/screens/orders.dart';
 import 'package:vendx/features/orders/view/screens/new.dart';
@@ -277,6 +278,14 @@ final class AppRouter {
               GoRoute(
                 path: Routes.favoritePage,
                 builder: (context, state) => const FavouritesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.userPage,
+                builder: (context, state) => const UserScreen(),
               ),
             ],
           ),

@@ -18,6 +18,7 @@ class Routes {
   static const String success = '/success';
   static const String orderDetails = '/orders/details';
   static const String favoritePage = '/favorite';
+  static const String userPage = '/user';
 
   // static const String settingsPage = '/settings';
   // static const String nestedProfilePage = '/settings/profile';
