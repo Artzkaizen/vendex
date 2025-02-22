@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vendx/features/orders/model/order.dart';
+// import 'package:vendx/features/orders/model/order_strapi.dart';
+
 import 'package:vendx/features/orders/view/widgets/order_steps.dart';
 import 'package:vendx/utlis/theme/elevated_button.dart';
 
@@ -9,7 +11,7 @@ class SingleOrderScreen extends StatefulWidget {
   const SingleOrderScreen({super.key, required this.order});
 
   @override
-  _SingleOrderScreenState createState() => _SingleOrderScreenState();
+  State<SingleOrderScreen> createState() => _SingleOrderScreenState();
 }
 
 class _SingleOrderScreenState extends State<SingleOrderScreen> {

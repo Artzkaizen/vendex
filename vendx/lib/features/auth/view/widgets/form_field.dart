@@ -56,6 +56,7 @@ class AuthTextField extends StatelessWidget {
       obscureText: obscureText,
       onSaved: onSaved,
       validator: validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
     );
   }
 }

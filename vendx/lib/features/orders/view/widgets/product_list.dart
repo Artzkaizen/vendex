@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vendx/features/orders/model/order.dart';
 import 'package:vendx/utlis/constants/colors.dart';
+import 'package:vendx/utlis/helpers/currency_formatter.dart';
 
 class ProductList extends StatelessWidget {
   final OrderModel order;
@@ -9,19 +10,19 @@ class ProductList extends StatelessWidget {
   final Function(int, bool) onProductSelected;
 
   const ProductList({
-    Key? key,
+    super.key,
     required this.order,
     required this.selectedTabIndex,
     required this.selectedProducts,
     required this.onProductSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: order.products.length,
+      itemCount: order.items.length,
       itemBuilder: (context, index) {
-        final product = order.products[index];
+        final orderItem = order.items[index];
         return Card(
           elevation: 2.0,
           margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -30,13 +31,16 @@ class ProductList extends StatelessWidget {
           ),
           child: ListTile(
             leading: Image.network(
-              product.thumbnail,
+              orderItem.product.images != null &&
+                      orderItem.product.images!.isNotEmpty
+                  ? orderItem.product.images![0].url
+                  : 'https://via.placeholder.com/50',
               width: 50,
               height: 50,
               fit: BoxFit.cover,
             ),
-            title: Text(product.title),
-            subtitle: Text('Qty: ${product.quantity}'),
+            title: Text(orderItem.product.name),
+            subtitle: Text('Qty: ${orderItem.quantity}'),
             trailing: selectedTabIndex == 1
                 ? Transform.scale(
                     scale: 1.2,
@@ -49,7 +53,7 @@ class ProductList extends StatelessWidget {
                       activeColor: VendxColors.primary800,
                     ),
                   )
-                : Text('€${product.price.toStringAsFixed(2)}'),
+                : Text(formatCurrency(orderItem.product.price.netPrice)),
           ),
         );
       },

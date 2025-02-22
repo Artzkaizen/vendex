@@ -4,6 +4,7 @@ import 'package:vendx/features/auth/view/widgets/auth_layout.dart';
 import 'package:vendx/features/auth/view/widgets/button.dart';
 import 'package:vendx/features/auth/view/widgets/form_field.dart';
 import 'package:vendx/router/init.dart';
+import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -53,7 +54,6 @@ class _SignupScreenState extends State<SignupScreen> {
     return AuthLayout(
       child: Center(
         child: SingleChildScrollView(
-          // Added SingleChildScrollView
           child: Form(
             key: _formKey,
             child: Column(

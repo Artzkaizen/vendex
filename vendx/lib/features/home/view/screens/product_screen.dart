@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vendx/features/cart/controller/cart_state.dart';
-import 'package:vendx/features/product/model/products.dart';
 import 'package:vendx/features/home/view/widgets/buy_now_btn.dart';
+import 'package:vendx/features/product/model/product.dart';
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
-import 'package:vendx/utlis/constants/env.dart';
 import 'package:vendx/utlis/constants/images.dart';
 import 'package:vendx/utlis/helpers/currency_formatter.dart';
 import 'package:vendx/utlis/helpers/screen_utils.dart';
@@ -30,8 +29,7 @@ class ProductScreen extends StatelessWidget {
         : VendxColors.primary50;
 
     final List<String> imageUrls =
-        product.images?.map((image) => Env.apiBaseUrl + image.url).toList() ??
-            [];
+        product.images?.map((image) => image.url).toList() ?? [];
 
     debugPrint('ProductScreen: imageUrls: $imageUrls');
 
@@ -111,7 +109,7 @@ class ProductScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          formatCurrency(product.price.netPrice),
+                          formatCurrency(0),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ],
@@ -142,7 +140,7 @@ class ProductScreen extends StatelessWidget {
                           quantity: cart.getItemQuantity(product),
                           onBuyNow: () {
                             cart.manageItem(product, 'add');
-                            context.pushNamed(Routes.cartPage);
+                            context.pushNamed(AppRoutes.cart);
                           },
                           onAddQuantity: () {},
                         );

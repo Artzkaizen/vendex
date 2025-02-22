@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:vendx/features/cart/controller/cart_state.dart';
 import 'package:vendx/router/routes.dart';
 
@@ -19,7 +19,7 @@ class CartBadge extends StatelessWidget {
           children: [
             IconButton(
               icon: const Icon(CupertinoIcons.bag, size: 30),
-              onPressed: () => context.pushNamed(Routes.cartPage),
+              onPressed: () => context.pushNamed(AppRoutes.cart),
             ),
             Obx(() {
               if (cartState.totalQuantity > 0) {

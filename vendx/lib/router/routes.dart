@@ -9,18 +9,22 @@ class BottomNavRoute {
   final IconData activeIcon;
 }
 
-class Routes {
-  Routes._();
-  static const String cartPage = '/cart';
-  static const String homePage = '/home';
-  static const String products = 'products';
-  static const String ordersPage = '/orders';
-  static const String success = '/success';
-  static const String orderDetails = '/orders/details';
-  static const String favoritePage = '/favorite';
+class AppRoutes {
+  static const login = '/login';
+  static const signup = '/signup';
+  static const resetPassword = '/reset-password';
+  static const forgotPassword = '/forgot-password';
 
-  // static const String settingsPage = '/settings';
-  // static const String nestedProfilePage = '/settings/profile';
+  static const home = '/home';
+  static const orders = '/orders';
+  static const profile = '/profile';
+  static const favourites = '/favourites';
+  static const success = '/success';
+
+  static const cart = '/cart';
+  static const product = '/product:id';
+  static const category = '/category/:id';
+  static const orderDetails = '/order-details/:orderId';
 
   static const bottomNavRoutes = <BottomNavRoute>[
     BottomNavRoute(
@@ -34,8 +38,6 @@ class Routes {
         icon: Icons.favorite_border_outlined,
         activeIcon: Icons.favorite),
     BottomNavRoute(
-        label: 'User',
-        icon: Icons.person_outline,
-        activeIcon: Icons.person),
+        label: 'Profile', icon: Icons.person_outline, activeIcon: Icons.person),
   ];
 }

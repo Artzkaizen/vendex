@@ -1,3 +1,6 @@
+import 'package:vendx/features/product/model/category.dart';
+import 'package:vendx/features/product/model/price.dart';
+
 class ProductModel {
   final int id;
   final String documentId;
@@ -9,7 +12,7 @@ class ProductModel {
   final String productStatus;
   final Price price;
   final List<Category> category;
-  final List<dynamic> ratings;
+  // final List<dynamic> ratings;
   final List<Tag> tags;
   final List<Image>? images;
 
@@ -24,7 +27,7 @@ class ProductModel {
     required this.productStatus,
     required this.price,
     required this.category,
-    required this.ratings,
+    // required this.ratings,
     required this.tags,
     this.images,
   });
@@ -42,55 +45,30 @@ class ProductModel {
       price: Price.fromJson(json['price']),
       category: List<Category>.from(
           json['category'].map((x) => Category.fromJson(x))),
-      ratings: List<dynamic>.from(json['ratings']),
+      // ratings: List<dynamic>.from(json['ratings']),
       tags: List<Tag>.from(json['tags'].map((x) => Tag.fromJson(x))),
       images: json['images'] != null
           ? List<Image>.from(json['images'].map((x) => Image.fromJson(x)))
           : null,
     );
   }
-}
 
-class Price {
-  final int id;
-  final double netPrice;
-  final String currency;
-  final double vatRate;
-
-  Price({
-    required this.id,
-    required this.netPrice,
-    required this.currency,
-    required this.vatRate,
-  });
-
-  factory Price.fromJson(Map<String, dynamic> json) {
-    return Price(
-      id: json['id'],
-      netPrice: json['netPrice'].toDouble(),
-      currency: json['currency'],
-      vatRate: json['vatRate'].toDouble(),
-    );
-  }
-}
-
-class Category {
-  final int id;
-  final String name;
-  final String description;
-
-  Category({
-    required this.id,
-    required this.name,
-    required this.description,
-  });
-
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'documentId': documentId,
+      'name': name,
+      'description': description,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+      'publishedAt': publishedAt.toIso8601String(),
+      'productStatus': productStatus,
+      'price': price.toJson(),
+      // 'category': category,
+      // 'ratings': ratings,
+      'tags': tags,
+      'images': images,
+    };
   }
 }
 
@@ -200,6 +178,14 @@ class Formats {
       medium: json['medium'] != null ? Format.fromJson(json['medium']) : null,
       large: json['large'] != null ? Format.fromJson(json['large']) : null,
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'thumbnail': thumbnail,
+      'small': small,
+      'medium': medium,
+      'large': large,
+    };
   }
 }
 

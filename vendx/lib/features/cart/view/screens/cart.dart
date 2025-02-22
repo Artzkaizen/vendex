@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:vendx/features/auth/view/widgets/button.dart';
 import 'package:vendx/features/cart/controller/cart_state.dart';
 import 'package:vendx/features/cart/view/screens/add_remove_cart.dart';
+import 'package:vendx/router/init.dart';
+import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
 import 'package:vendx/utlis/helpers/currency_formatter.dart';
 
@@ -101,14 +104,21 @@ class CartScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      // const CheckoutScreen(),
-
                       CustomAuthButton(
                           isLoading: controller.isCheckoutPending,
                           isDisabled: controller.isEmpty ||
                               controller.isCheckoutPending,
                           labelText: 'Checkout',
-                          onPress: () => controller.handleCheckout(context))
+                          onPress: () async {
+                            final order = await controller.placeOrder(context);
+
+                            debugPrint('Order From Cart Page: $order');
+                            if (order != null) {
+                              if (!context.mounted) return;
+                              context.pushNamed(AppRoutes.success,
+                                  extra: order);
+                            }
+                          })
                     ],
                   )),
             )));

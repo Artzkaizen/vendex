@@ -120,7 +120,7 @@ class StepContent extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(
-                      '${selectedProducts.length} / ${order.products.length}',
+                      '${selectedProducts.length} / ${order.items.length}',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],
@@ -205,7 +205,7 @@ class StepContent extends StatelessWidget {
                     Text('Selected Machine: $selectedMachine'),
                     const SizedBox(height: 8),
                     Text(
-                      'Items: ${selectedTabIndex == 1 ? selectedProducts.length : order.products.length}',
+                      'Items: ${selectedTabIndex == 1 ? selectedProducts.length : order.items.length}',
                     ),
                   ],
                 ),

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
 import 'package:vendx/features/cart/controller/cart_state.dart';
-import 'package:vendx/features/product/model/products.dart';
+import 'package:vendx/features/product/model/product.dart';
 import 'package:vendx/features/product/view/widgets/product_item_card.dart';
 import 'package:vendx/utlis/constants/env.dart';
 

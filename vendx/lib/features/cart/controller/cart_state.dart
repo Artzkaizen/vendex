@@ -3,8 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:vendx/features/auth/controller/auth_http.dart';
 import 'package:vendx/features/cart/model/cart_item.dart';
-import 'package:vendx/features/product/model/products.dart';
+import 'package:vendx/features/orders/model/order.dart';
+import 'package:vendx/features/product/model/product.dart';
+import 'package:vendx/utlis/constants/env.dart';
 
 class CartState extends GetxController {
   final RxList<CartItemModel> _items = <CartItemModel>[].obs;
@@ -63,6 +66,64 @@ class CartState extends GetxController {
       // Add new item to the cart
       _items.add(CartItemModel(product: product, quantity: 1));
     }
+  }
+
+  Future<OrderModel?> placeOrder(BuildContext context) async {
+    final authClient = AuthHttpClient(http.Client(), context);
+
+    try {
+      setCheckoutPending(true);
+      final body = jsonEncode({
+        'data': {
+          'orderStatus': 'UNPAID',
+          'issue': false,
+          'items': _items
+              .map((item) => {
+                    'product': item.product.documentId,
+                    'quantity': item.quantity,
+                    'price': {
+                      'netPrice': item.product.price.netPrice,
+                      'currency': item.product.price.currency,
+                      'vatRate': item.product.price.vatRate,
+                    }
+                  })
+              .toList(),
+        }
+      });
+
+      final response = await authClient.post(
+        Uri.parse(
+            '${Env.apiBaseUrl}/api/orders?populate=items&populate=items.price&populate=items.product&populate=items.product.price&populate=items.product.images&populate=items.product.category&populate=items.product.tags'),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode != 201) {
+        throw Exception(
+            'Failed to place order. Server responded with status code: ${response.statusCode}');
+      }
+
+      _items.clear();
+      final res = jsonDecode(response.body);
+
+      // final order = OrderModel.fromJson(body['data']);
+
+      // debugPrint('Order placed: ${body['data']}');
+
+      final data = res['data'];
+      return OrderModel.fromJson(data);
+
+      // // Clear the cart after successful order placement
+      // Get.snackbar('Success', 'Order placed successfully!',
+      //     snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
+    } catch (e) {
+      debugPrint('Error: $e');
+      Get.snackbar('Error', 'Failed to place order: $e',
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
+    } finally {
+      setCheckoutPending(false);
+    }
+    return null;
   }
 
   // Handle checkout process

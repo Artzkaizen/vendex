@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:vendx/features/product/model/products.dart';
+import 'package:vendx/features/product/model/product.dart';
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
 import 'package:vendx/utlis/constants/env.dart';
@@ -20,7 +20,8 @@ class ProductItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.pushNamed(Routes.products, extra: product),
+      onTap: () => context.pushNamed(AppRoutes.product,
+          extra: product, pathParameters: {'id': product.id.toString()}),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -50,7 +51,7 @@ class ProductItemCard extends StatelessWidget {
                   image: (product.images?.isEmpty ?? true)
                       ? const AssetImage(VendxImages.imgPlaceholder)
                       : NetworkImage(
-                          '${Env.apiBaseUrl}${product.images?.first.url}',
+                          '${product.images?.first.url}',
                         ),
                   fit: BoxFit.cover,
                 ),

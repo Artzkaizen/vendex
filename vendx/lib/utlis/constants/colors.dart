@@ -27,6 +27,11 @@ class VendxColors {
   static const Color neutral100 = Color(0xFFE6E6E6); // 200
   static const Color neutral50 = Color(0xFFF2F2F2); // 100
 
+  // Error Colors
+  static const Color error900 = Color(0xFFD32F2F); // 900
+  static const Color error800 = Color(0xFFE53935); // 800
+  static const Color error700 = Color(0xFFF44336); // 700
+
   // Spacing and Sizes
   static const double spacing4 = 4.0;
   static const double spacing8 = 8.0;

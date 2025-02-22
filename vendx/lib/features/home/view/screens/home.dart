@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
-
-import 'package:vendx/features/home/view/widgets/cart_badge.dart';
-import 'package:vendx/features/product/model/products.dart';
 import 'package:vendx/features/home/view/screens/main.dart';
+import 'package:vendx/features/home/view/widgets/cart_badge.dart';
+import 'package:vendx/features/product/model/product.dart';
 import 'package:vendx/features/product/view/widgets/product_grid.dart';
-
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/helpers/screen_utils.dart';
 
@@ -69,8 +66,8 @@ class HomeScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   TextButton(
-                    onPressed: () =>
-                        context.pushNamed(Routes.products, extra: ProductModel),
+                    onPressed: () => context.pushNamed(AppRoutes.product,
+                        extra: ProductModel),
                     child: Text(
                       'View all',
                       style: TextStyle(

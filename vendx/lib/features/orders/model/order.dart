@@ -1,103 +1,108 @@
-import 'dart:math';
+import 'package:vendx/features/product/model/price.dart';
+import 'package:vendx/features/product/model/product.dart';
 
 class OrderModel {
   final int id;
-  final List<Product> products;
-  final double total;
-  final double discountedTotal;
-  final int userId;
-  final int totalProducts;
-  final int totalQuantity;
+  final String orderStatus;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime publishedAt;
+  final List<OrderItem> items;
 
   OrderModel({
     required this.id,
-    required this.products,
-    required this.total,
-    required this.discountedTotal,
-    required this.userId,
-    required this.totalProducts,
-    required this.totalQuantity,
+    required this.orderStatus,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.publishedAt,
+    required this.items,
   });
 
-  // Factory constructor to create an instance from JSON
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       id: json['id'],
-      products: (json['products'] as List)
-          .map((product) => Product.fromJson(product))
+      orderStatus: json['orderStatus'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      publishedAt: DateTime.parse(json['publishedAt']),
+      items: (json['items'] as List)
+          .map((item) => OrderItem.fromJson(item))
           .toList(),
-      total: json['total'].toDouble(),
-      discountedTotal: json['discountedTotal'].toDouble(),
-      userId: json['userId'],
-      totalProducts: json['totalProducts'],
-      totalQuantity: json['totalQuantity'],
+    );
+  }
+}
+
+class OrderItem {
+  final int id;
+  final int quantity;
+  final ProductModel product;
+  final Price price;
+
+  OrderItem({
+    required this.id,
+    required this.quantity,
+    required this.product,
+    required this.price,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    return OrderItem(
+      id: json['id'],
+      quantity: json['quantity'],
+      product: ProductModel.fromJson(json['product']),
+      price: Price.fromJson(json['price']),
+    );
+  }
+}
+
+class Meta {
+  final Pagination pagination;
+
+  Meta({
+    required this.pagination,
+  });
+
+  factory Meta.fromJson(Map<String, dynamic> json) {
+    return Meta(
+      pagination: Pagination.fromJson(json['pagination']),
     );
   }
 
-  // Convert an instance to JSON
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'products': products.map((product) => product.toJson()).toList(),
-      'total': total,
-      'discountedTotal': discountedTotal,
-      'userId': userId,
-      'totalProducts': totalProducts,
-      'totalQuantity': totalQuantity,
+      'pagination': pagination.toJson(),
     };
   }
 }
 
-class Product {
-  final int id;
-  final String title;
-  final double price;
-  final int quantity;
-  final int collected;
-  final double total;
-  final double discountPercentage;
-  final double discountedTotal;
-  final String thumbnail;
+class Pagination {
+  final int page;
+  final int pageSize;
+  final int pageCount;
+  final int total;
 
-  Product({
-    required this.id,
-    required this.title,
-    required this.price,
-    required this.quantity,
-    this.collected = 0,
+  Pagination({
+    required this.page,
+    required this.pageSize,
+    required this.pageCount,
     required this.total,
-    required this.discountPercentage,
-    required this.discountedTotal,
-    required this.thumbnail,
   });
 
-  // Factory constructor to create an instance from JSON
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-      id: json['id'],
-      title: json['title'],
-      price: json['price'].toDouble(),
-      quantity: json['quantity'],
-      total: json['total'].toDouble(),
-      discountPercentage: json['discountPercentage'].toDouble(),
-      discountedTotal: json['discountedTotal'].toDouble(),
-      thumbnail: json['thumbnail'],
-      collected: Random().nextInt(json['quantity']),
+  factory Pagination.fromJson(Map<String, dynamic> json) {
+    return Pagination(
+      page: json['page'],
+      pageSize: json['pageSize'],
+      pageCount: json['pageCount'],
+      total: json['total'],
     );
   }
 
-  // Convert an instance to JSON
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'title': title,
-      'price': price,
-      'quantity': quantity,
+      'page': page,
+      'pageSize': pageSize,
+      'pageCount': pageCount,
       'total': total,
-      'discountPercentage': discountPercentage,
-      'discountedTotal': discountedTotal,
-      'thumbnail': thumbnail,
-      'collected': collected
     };
   }
 }

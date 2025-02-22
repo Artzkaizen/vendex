@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vendx/features/orders/model/order.dart';
 import 'package:vendx/utlis/constants/colors.dart';
+import 'package:vendx/utlis/helpers/currency_formatter.dart';
 import 'package:vendx/utlis/theme/elevated_button.dart';
 
 class SingleOrderScreen extends StatefulWidget {
@@ -66,29 +67,33 @@ class _SingleOrderScreenState extends State<SingleOrderScreen> {
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                itemCount: widget.order.products.length,
+                itemCount: widget.order.items.length,
                 itemBuilder: (context, index) {
-                  final product = widget.order.products[index];
+                  final orderItem = widget.order.items[index];
 
                   return Card(
-                    elevation: 2.0,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: ListTile(
-                      leading: Image.network(
-                        product.thumbnail,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
+                      elevation: 2.0,
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      title: Text(product.title),
-                      subtitle: Text(
-                          'Collected: ${product.collected} of ${product.quantity}'),
-                      trailing: Text('\$${product.price.toStringAsFixed(2)}'),
-                    ),
-                  );
+                      child: ListTile(
+                        leading: Image.network(
+                          orderItem.product.images != null &&
+                                  orderItem.product.images!.isNotEmpty
+                              ? orderItem.product.images![0].url
+                              : 'https://via.placeholder.com/50',
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        ),
+                        title: Text(orderItem.product.name),
+                        subtitle:
+                            Text('Collected: ${0} of ${orderItem.quantity}'),
+                        trailing: Text(
+                          formatCurrency(orderItem.product.price.netPrice),
+                        ),
+                      ));
                 },
               ),
             ),
@@ -191,10 +196,10 @@ class _SingleOrderScreenState extends State<SingleOrderScreen> {
                   children: [
                     Text('Selected Machine: $selectedMachine'),
                     const SizedBox(height: 8),
-                    Text('Total Items: ${widget.order.products.length}'),
+                    Text('Total Items: ${widget.order.items.length}'),
                     const SizedBox(height: 8),
                     Text(
-                      'Total Amount: \$${widget.order.products.fold(0.0, (sum, product) => sum + (product.price * product.quantity)).toStringAsFixed(2)}',
+                      'Total Amount: \$${widget.order.items.fold(0.0, (sum, product) => sum + (product.price.netPrice * product.quantity)).toStringAsFixed(2)}',
                     ),
                   ],
                 ),
