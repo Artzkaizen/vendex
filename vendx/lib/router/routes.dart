@@ -22,6 +22,7 @@ class AppRoutes {
   static const success = '/success';
 
   static const cart = '/cart';
+  static const search = '/search';
   static const product = '/product:id';
   static const category = '/category/:id';
   static const orderDetails = '/order-details/:orderId';

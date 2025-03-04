@@ -9,6 +9,7 @@ import 'package:vendx/features/auth/view/widgets/auth_provider.dart';
 
 import 'package:vendx/features/cart/view/screens/cart.dart';
 import 'package:vendx/features/cart/view/screens/payment_success.dart';
+import 'package:vendx/features/home/view/screens/user.dart';
 import 'package:vendx/features/orders/model/order.dart';
 import 'package:vendx/features/orders/view/screens/orders.dart';
 
@@ -19,7 +20,8 @@ import 'package:vendx/features/home/view/screens/favourites.dart';
 import 'package:vendx/features/home/view/screens/home.dart';
 
 import 'package:vendx/features/home/view/screens/product_screen.dart';
-import 'package:vendx/features/profile/view/screens/profile.dart';
+import 'package:vendx/features/home/view/screens/profile.dart';
+import 'package:vendx/features/home/view/screens/search_screen.dart';
 
 import 'package:vendx/router/routes.dart';
 
@@ -112,6 +114,11 @@ final class AppRouter {
         builder: (context, state) => CartScreen(),
       ),
       GoRoute(
+        name: AppRoutes.search,
+        path: AppRoutes.search,
+        builder: (context, state) => SearchScreen(),
+      ),
+      GoRoute(
         name: AppRoutes.success,
         path: AppRoutes.success,
         builder: (context, state) => PaymentSuccessScreen(
@@ -174,7 +181,7 @@ final class AppRouter {
             routes: [
               GoRoute(
                 path: AppRoutes.profile,
-                builder: (context, state) => const ProfileScreen(),
+                builder: (context, state) => const UserScreen(),
               ),
             ],
           ),

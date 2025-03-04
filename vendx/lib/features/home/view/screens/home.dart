@@ -30,7 +30,9 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: const Icon(CupertinoIcons.search, size: 30),
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push(AppRoutes.search);
+                    },
                   ),
                   IconButton(
                     icon: const Icon(CupertinoIcons.bell, size: 30),
@@ -66,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   TextButton(
-                    onPressed: () => context.pushNamed(AppRoutes.product,
+                    onPressed: () => context.pushNamed(AppRoutes.search,
                         extra: ProductModel),
                     child: Text(
                       'View all',
