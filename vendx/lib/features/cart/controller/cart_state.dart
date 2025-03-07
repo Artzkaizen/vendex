@@ -112,12 +112,11 @@ class CartState extends GetxController {
       final order = OrderModel.fromJson(data);
 
       if (context.mounted) {
-        final success = await handleCheckout(context, user);
+        // final success = await handleCheckout(context, user);
 
-        return (order, success);
+        return (order, true);
       }
 
-      // _items.clear();
       return (order, false);
     } catch (e) {
       debugPrint('Error: $e');
