@@ -225,7 +225,7 @@ class _SingleOrderScreenState extends State<SingleOrderScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4.0),
           child: LinearProgressIndicator(
-            value: currentStep / 4,
+            value: currentStep / 3,
             backgroundColor: Colors.grey.shade300,
             valueColor: AlwaysStoppedAnimation<Color>(
               Theme.of(context).primaryColor,
@@ -237,9 +237,8 @@ class _SingleOrderScreenState extends State<SingleOrderScreen> {
           children: [
             const Text('Redeem Order'),
             Text(
-              '$currentStep / 4 ${[
+              '$currentStep / 3 ${[
                 "Review Details",
-                "Select Machine",
                 "Confirm",
                 "Complete"
               ][currentStep - 1]}',

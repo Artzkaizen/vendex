@@ -78,7 +78,7 @@ class CartState extends GetxController {
       setCheckoutPending(true);
       final body = jsonEncode({
         'data': {
-          'orderStatus': 'UNPAID',
+          'orderStatus': 'PAID',
           'issue': false,
           'items': _items
               .map((item) => {
@@ -110,8 +110,6 @@ class CartState extends GetxController {
 
       final data = res['data'];
       final order = OrderModel.fromJson(data);
-      // Get.snackbar('Success', 'Order placed successfully!',
-      //     snackPosition: SnackPosition.TOP, backgroundColor: Colors.green);
 
       if (context.mounted) {
         final success = await handleCheckout(context, user);
@@ -138,8 +136,6 @@ class CartState extends GetxController {
           snackPosition: SnackPosition.TOP, backgroundColor: Colors.red);
       return false;
     }
-
-    debugPrint("USer: ${user.toJson()}");
 
     try {
       // Step 1: Create a payment intent
