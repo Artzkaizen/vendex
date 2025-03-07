@@ -141,8 +141,7 @@ class CartState extends GetxController {
       // Step 1: Create a payment intent
       setCheckoutPending(true);
       final response = await http.post(
-        Uri.parse(
-            'https://mdn1t19v-4000.euw.devtunnels.ms/payments/stripe/create'),
+        Uri.parse('https://vendex-tjdw.onrender.com/payments/stripe/create'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "userId": "7e6d4b5c-f8c1-4d72-8e5b-d942a9a8a13b",
