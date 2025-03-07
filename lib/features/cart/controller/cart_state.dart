@@ -111,13 +111,9 @@ class CartState extends GetxController {
       final data = res['data'];
       final order = OrderModel.fromJson(data);
 
-      if (context.mounted) {
-        // final success = await handleCheckout(context, user);
+      _items.clear();
 
-        return (order, true);
-      }
-
-      return (order, false);
+      return (order, true);
     } catch (e) {
       debugPrint('Error: $e');
       Get.snackbar('Error', 'Failed to place order: $e',
