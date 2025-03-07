@@ -10,11 +10,12 @@ class ProductModel {
   final DateTime updatedAt;
   final DateTime publishedAt;
   final String productStatus;
-  final Price price;
-  final List<Category> category;
+  final Price? price;
+  final List<Category>? category;
   // final List<dynamic> ratings;
-  final List<Tag> tags;
-  final List<Image>? images;
+  final List<Tag>? tags;
+  final List<Images>? images;
+  final String? gtin;
 
   ProductModel({
     required this.id,
@@ -26,8 +27,10 @@ class ProductModel {
     required this.publishedAt,
     required this.productStatus,
     required this.price,
+    required this.gtin,
     required this.category,
     // required this.ratings,
+
     required this.tags,
     this.images,
   });
@@ -37,18 +40,22 @@ class ProductModel {
       id: json['id'],
       documentId: json['documentId'],
       name: json['name'],
+      gtin: json['gtin'],
       description: json['description'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       publishedAt: DateTime.parse(json['publishedAt']),
       productStatus: json['productStatus'],
-      price: Price.fromJson(json['price']),
-      category: List<Category>.from(
-          json['category'].map((x) => Category.fromJson(x))),
-      // ratings: List<dynamic>.from(json['ratings']),
-      tags: List<Tag>.from(json['tags'].map((x) => Tag.fromJson(x))),
+      price: json['price'] != null ? Price.fromJson(json['price']) : null,
+      category: json['category'] != null
+          ? List<Category>.from(
+              json['category']?.map((x) => Category.fromJson(x)))
+          : null,
+      tags: json['tags'] != null
+          ? List<Tag>.from(json['tags']?.map((x) => Tag.fromJson(x)))
+          : null,
       images: json['images'] != null
-          ? List<Image>.from(json['images'].map((x) => Image.fromJson(x)))
+          ? List<Images>.from(json['images'].map((x) => Images.fromJson(x)))
           : null,
     );
   }
@@ -63,7 +70,7 @@ class ProductModel {
       'updatedAt': updatedAt.toIso8601String(),
       'publishedAt': publishedAt.toIso8601String(),
       'productStatus': productStatus,
-      'price': price.toJson(),
+      'price': price?.toJson(),
       // 'category': category,
       // 'ratings': ratings,
       'tags': tags,
@@ -89,7 +96,7 @@ class Tag {
   }
 }
 
-class Image {
+class Images {
   final int id;
   final String documentId;
   final String name;
@@ -110,7 +117,7 @@ class Image {
   final DateTime updatedAt;
   final DateTime publishedAt;
 
-  Image({
+  Images({
     required this.id,
     required this.documentId,
     required this.name,
@@ -132,8 +139,8 @@ class Image {
     required this.publishedAt,
   });
 
-  factory Image.fromJson(Map<String, dynamic> json) {
-    return Image(
+  factory Images.fromJson(Map<String, dynamic> json) {
+    return Images(
       id: json['id'],
       documentId: json['documentId'],
       name: json['name'],

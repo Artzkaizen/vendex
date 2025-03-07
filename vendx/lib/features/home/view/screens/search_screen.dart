@@ -93,17 +93,17 @@ class _SearchScreenState extends State<SearchScreen> {
 
     // Sort products
     if (sortOption == 'Price: Low to High') {
-      _filteredProducts
-          .sort((a, b) => (a.price.netPrice - b.price.netPrice).toInt());
+      _filteredProducts.sort((a, b) =>
+          ((a.price?.netPrice ?? 0) - (b.price?.netPrice ?? 0)).toInt());
     } else if (sortOption == 'Price: High to Low') {
-      _filteredProducts
-          .sort((a, b) => (b.price.netPrice - a.price.netPrice).toInt());
+      _filteredProducts.sort((a, b) =>
+          ((b.price?.netPrice ?? 0) - (a.price?.netPrice ?? 0)).toInt());
     }
   }
 
   Widget _buildLoadingState() {
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.75,
         crossAxisSpacing: 10,
@@ -140,7 +140,7 @@ class _SearchScreenState extends State<SearchScreen> {
           decoration: const InputDecoration(
             hintText: 'Search',
             border: InputBorder.none,
-            prefixIcon: Icon(Icons.search, color: Colors.grey),
+            // prefixIcon: Icon(Icons.search, color: Colors.grey),
           ),
           onChanged: (value) {
             setState(() {
@@ -163,7 +163,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   // Category Dropdown
                   DropdownButton<String>(
                     value: selectedCategory,
-                    hint: Text('Category'),
+                    hint: const Text('Category'),
                     items: categories.map((String category) {
                       return DropdownMenuItem<String>(
                         value: category,
@@ -177,11 +177,11 @@ class _SearchScreenState extends State<SearchScreen> {
                       });
                     },
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   // Machine Dropdown
                   DropdownButton<String>(
                     value: selectedMachine,
-                    hint: Text('Machine'),
+                    hint: const Text('Machine'),
                     items: machines.map((String machine) {
                       return DropdownMenuItem<String>(
                         value: machine,
@@ -194,11 +194,11 @@ class _SearchScreenState extends State<SearchScreen> {
                       });
                     },
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   // Sort Dropdown
                   DropdownButton<String>(
                     value: sortOption,
-                    hint: Text('Sort'),
+                    hint: const Text('Sort'),
                     items: sortOptions.map((String option) {
                       return DropdownMenuItem<String>(
                         value: option,
@@ -215,7 +215,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Product Grid
             Expanded(
               child: _isLoading
@@ -225,28 +225,28 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.error_outline,
                                 color: Colors.red,
                                 size: 48.0,
                               ),
-                              SizedBox(height: 16.0),
-                              Text(
+                              const SizedBox(height: 16.0),
+                              const Text(
                                 'Oops! Something went wrong.',
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 8.0),
+                              const SizedBox(height: 8.0),
                               Text(
                                 _errorMessage,
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 16.0),
+                              const SizedBox(height: 16.0),
                               ElevatedButton(
                                 onPressed: _fetchProducts,
-                                child: Text('Retry'),
+                                child: const Text('Retry'),
                               )
                             ],
                           ),

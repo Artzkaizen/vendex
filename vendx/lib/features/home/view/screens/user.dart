@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vendx/features/auth/view/widgets/auth_provider.dart';
+import 'package:vendx/router/init.dart';
+import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
 
 class UserScreen extends StatefulWidget {
@@ -13,6 +17,8 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -37,7 +43,11 @@ class _UserScreenState extends State<UserScreen> {
             ),
           ),
           _buildActionTile(context, Icons.help, 'Help', _handleHelp),
-          _buildActionTile(context, Icons.logout, 'Log Out', _handleLogOut),
+          _buildActionTile(context, Icons.logout, 'Log Out',
+              (BuildContext ctx) {
+            authProvider.logout();
+            AppRouter.go(ctx, AppRoutes.login);
+          }),
           _buildActionTile(
               context, Icons.close, 'Close Account', _handleCloseAccount),
         ],
@@ -71,10 +81,6 @@ class _UserScreenState extends State<UserScreen> {
     const SnackBar(content: Text("Help"));
   }
 
-  void _handleLogOut(BuildContext context) {
-    const SnackBar(content: Text("Logged out"));
-  }
-
   void _handleCloseAccount(BuildContext context) {
     const SnackBar(content: Text("Account closed"));
   }
@@ -83,6 +89,8 @@ class _UserScreenState extends State<UserScreen> {
 // Screens
 
 class PersonalDetailsScreen extends StatelessWidget {
+  const PersonalDetailsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,9 +1,11 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:vendx/features/auth/controller/auth_http.dart';
+import 'package:vendx/features/auth/model/user_model.dart';
 import 'package:vendx/features/cart/model/cart_item.dart';
 import 'package:vendx/features/orders/model/order.dart';
 import 'package:vendx/features/product/model/product.dart';
@@ -41,7 +43,7 @@ class CartState extends GetxController {
   double getTotalAmount() {
     return _items.fold<double>(
       0.0,
-      (sum, item) => sum + (item.product.price.netPrice * item.quantity),
+      (sum, item) => sum + (item.product.price?.netPrice ?? 0 * item.quantity),
     );
   }
 
@@ -68,7 +70,8 @@ class CartState extends GetxController {
     }
   }
 
-  Future<OrderModel?> placeOrder(BuildContext context) async {
+  Future<(OrderModel?, bool)> placeOrder(
+      BuildContext context, User? user) async {
     final authClient = AuthHttpClient(http.Client(), context);
 
     try {
@@ -82,9 +85,9 @@ class CartState extends GetxController {
                     'product': item.product.documentId,
                     'quantity': item.quantity,
                     'price': {
-                      'netPrice': item.product.price.netPrice,
-                      'currency': item.product.price.currency,
-                      'vatRate': item.product.price.vatRate,
+                      'netPrice': item.product.price?.netPrice,
+                      'currency': item.product.price?.currency,
+                      'vatRate': item.product.price?.vatRate,
                     }
                   })
               .toList(),
@@ -103,19 +106,21 @@ class CartState extends GetxController {
             'Failed to place order. Server responded with status code: ${response.statusCode}');
       }
 
-      _items.clear();
       final res = jsonDecode(response.body);
 
-      // final order = OrderModel.fromJson(body['data']);
-
-      // debugPrint('Order placed: ${body['data']}');
-
       final data = res['data'];
-      return OrderModel.fromJson(data);
-
-      // // Clear the cart after successful order placement
+      final order = OrderModel.fromJson(data);
       // Get.snackbar('Success', 'Order placed successfully!',
-      //     snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
+      //     snackPosition: SnackPosition.TOP, backgroundColor: Colors.green);
+
+      if (context.mounted) {
+        final success = await handleCheckout(context, user);
+
+        return (order, success);
+      }
+
+      // _items.clear();
+      return (order, false);
     } catch (e) {
       debugPrint('Error: $e');
       Get.snackbar('Error', 'Failed to place order: $e',
@@ -123,16 +128,25 @@ class CartState extends GetxController {
     } finally {
       setCheckoutPending(false);
     }
-    return null;
+    return (null, false);
   }
 
   // Handle checkout process
-  Future<void> handleCheckout(BuildContext context) async {
+  Future<bool> handleCheckout(BuildContext context, User? user) async {
+    if (user == null) {
+      Get.snackbar('Error', 'Please login to continue!',
+          snackPosition: SnackPosition.TOP, backgroundColor: Colors.red);
+      return false;
+    }
+
+    debugPrint("USer: ${user.toJson()}");
+
     try {
       // Step 1: Create a payment intent
       setCheckoutPending(true);
       final response = await http.post(
-        Uri.parse('http://localhost:4000/payments/stripe/create'),
+        Uri.parse(
+            'https://mdn1t19v-4000.euw.devtunnels.ms/payments/stripe/create'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "userId": "7e6d4b5c-f8c1-4d72-8e5b-d942a9a8a13b",
@@ -174,23 +188,21 @@ class CartState extends GetxController {
       await Stripe.instance.presentPaymentSheet();
 
       // Handle successful payment
-      // Success flow
       Get.snackbar('Success', 'Payment completed successfully!',
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
+          snackPosition: SnackPosition.TOP, backgroundColor: Colors.green);
       // Clear the cart after successful payment
       _items.clear();
-      // Navigate to a success page
-      // Get.toNamed('/success');
+      return true;
     } catch (e) {
       // Handle errors
       if (e is StripeException) {
-        // print('Error from Stripe: ${e.error.localizedMessage}');
         Get.snackbar('Error', '${e.error.localizedMessage}',
-            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
+            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red);
       } else {
         Get.snackbar('Error', 'Payment failed: $e',
-            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red);
+            snackPosition: SnackPosition.TOP, backgroundColor: Colors.red);
       }
+      return false;
     }
   }
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:provider/provider.dart';
+import 'package:vendx/features/auth/view/widgets/auth_provider.dart';
 import 'package:vendx/features/auth/view/widgets/button.dart';
 import 'package:vendx/features/cart/controller/cart_state.dart';
 import 'package:vendx/features/cart/view/screens/add_remove_cart.dart';
-import 'package:vendx/router/init.dart';
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
 import 'package:vendx/utlis/helpers/currency_formatter.dart';
@@ -17,6 +17,8 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
     return Scaffold(
         appBar: AppBar(title: const Text('Cart')),
         body: Obx(() {
@@ -64,7 +66,8 @@ class CartScreen extends StatelessWidget {
                                 controller.manageItem(item.product, 'remove'),
                           ),
                           const Spacer(),
-                          Text(formatCurrency(item.product.price.netPrice),
+                          Text(
+                              formatCurrency(item.product.price?.netPrice ?? 0),
                               style: Theme.of(context).textTheme.labelMedium),
                         ],
                       ),
@@ -72,11 +75,13 @@ class CartScreen extends StatelessWidget {
                         width: 50,
                         height: 50,
                         child: Image.network(
-                          'https://picsum.photos/200/300',
-                          fit: BoxFit.cover,
+                          item.product.images != null &&
+                                  item.product.images!.isNotEmpty
+                              ? item.product.images![0].url
+                              : 'https://via.placeholder.com/50',
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               );
@@ -110,13 +115,13 @@ class CartScreen extends StatelessWidget {
                               controller.isCheckoutPending,
                           labelText: 'Checkout',
                           onPress: () async {
-                            final order = await controller.placeOrder(context);
+                            final order =
+                                await controller.placeOrder(context, user);
 
-                            debugPrint('Order From Cart Page: $order');
-                            if (order != null) {
+                            if (order.$1 != null && order.$2) {
                               if (!context.mounted) return;
                               context.pushNamed(AppRoutes.success,
-                                  extra: order);
+                                  extra: order.$1);
                             }
                           })
                     ],

@@ -3,6 +3,7 @@ import 'package:vendx/features/product/model/product.dart';
 
 class OrderModel {
   final int id;
+  final String documentId;
   final String orderStatus;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -11,6 +12,7 @@ class OrderModel {
 
   OrderModel({
     required this.id,
+    required this.documentId,
     required this.orderStatus,
     required this.createdAt,
     required this.updatedAt,
@@ -21,6 +23,7 @@ class OrderModel {
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       id: json['id'],
+      documentId: json['documentId'],
       orderStatus: json['orderStatus'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
@@ -36,7 +39,7 @@ class OrderItem {
   final int id;
   final int quantity;
   final ProductModel product;
-  final Price price;
+  final Price? price;
 
   OrderItem({
     required this.id,
@@ -50,7 +53,7 @@ class OrderItem {
       id: json['id'],
       quantity: json['quantity'],
       product: ProductModel.fromJson(json['product']),
-      price: Price.fromJson(json['price']),
+      price: json['price'] != null ? Price.fromJson(json['price']) : null,
     );
   }
 }

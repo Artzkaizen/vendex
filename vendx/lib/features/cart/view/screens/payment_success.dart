@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vendx/features/orders/model/order.dart';
-import 'package:vendx/router/init.dart';
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
 
@@ -81,8 +80,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       height: 56,
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () =>
-                            AppRouter.push(context, AppRoutes.home),
+                        onPressed: () => context.goNamed(AppRoutes.home),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white.withAlpha(0),
                           foregroundColor: Theme.of(context).primaryColor,

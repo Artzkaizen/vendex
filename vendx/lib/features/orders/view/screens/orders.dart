@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,125 +12,75 @@ import 'package:vendx/features/orders/model/order.dart';
 
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/env.dart';
+import 'package:vendx/utlis/helpers/currency_formatter.dart';
 
-// class Order {
-//   final int id;
-//   final String orderStatus;
-//   final DateTime createdAt;
-//   final DateTime updatedAt;
-//   final DateTime publishedAt;
-//   final List<OrderItem> items;
+import 'package:get/get.dart';
 
-//   Order({
-//     required this.id,
-//     required this.orderStatus,
-//     required this.createdAt,
-//     required this.updatedAt,
-//     required this.publishedAt,
-//     required this.items,
-//   });
+class OrdersScreen extends StatefulWidget {
+  const OrdersScreen({super.key});
 
-//   factory Order.fromJson(Map<String, dynamic> json) {
-//     return Order(
-//       id: json['id'],
-//       orderStatus: json['orderStatus'],
-//       createdAt: DateTime.parse(json['createdAt']),
-//       updatedAt: DateTime.parse(json['updatedAt']),
-//       publishedAt: DateTime.parse(json['publishedAt']),
-//       items: (json['items'] as List)
-//           .map((item) => OrderItem.fromJson(item))
-//           .toList(),
-//     );
-//   }
-// }
+  @override
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
 
-// class OrderItem {
-//   final int id;
-//   final int quantity;
-//   final Product product;
-//   final Price price;
-
-//   OrderItem({
-//     required this.id,
-//     required this.quantity,
-//     required this.product,
-//     required this.price,
-//   });
-
-//   factory OrderItem.fromJson(Map<String, dynamic> json) {
-//     return OrderItem(
-//       id: json['id'],
-//       quantity: json['quantity'],
-//       product: Product.fromJson(json['product']),
-//       price: Price.fromJson(json['price']),
-//     );
-//   }
-// }
-
-// class Product {
-//   final int id;
-//   final String documentId;
-//   final String name;
-//   final String description;
-//   final DateTime createdAt;
-//   final DateTime updatedAt;
-//   final DateTime publishedAt;
-//   final String productStatus;
-
-//   Product({
-//     required this.id,
-//     required this.documentId,
-//     required this.name,
-//     required this.description,
-//     required this.createdAt,
-//     required this.updatedAt,
-//     required this.publishedAt,
-//     required this.productStatus,
-//   });
-
-//   factory Product.fromJson(Map<String, dynamic> json) {
-//     return Product(
-//       id: json['id'],
-//       documentId: json['documentId'],
-//       name: json['name'],
-//       description: json['description'],
-//       createdAt: DateTime.parse(json['createdAt']),
-//       updatedAt: DateTime.parse(json['updatedAt']),
-//       publishedAt: DateTime.parse(json['publishedAt']),
-//       productStatus: json['productStatus'],
-//     );
-//   }
-// }
-
-// class Price {
-//   final int id;
-//   final double netPrice;
-//   final String currency;
-//   final double vatRate;
-
-//   Price({
-//     required this.id,
-//     required this.netPrice,
-//     required this.currency,
-//     required this.vatRate,
-//   });
-
-//   factory Price.fromJson(Map<String, dynamic> json) {
-//     return Price(
-//       id: json['id'],
-//       netPrice: json['netPrice'].toDouble(),
-//       currency: json['currency'],
-//       vatRate: json['vatRate'].toDouble(),
-//     );
-//   }
-// }
-
-class OrdersScreen extends StatelessWidget {
-  OrdersScreen({super.key});
-
+class _OrdersScreenState extends State<OrdersScreen>
+    with TickerProviderStateMixin {
   final controller = Get.find<CartState>();
+  late TabController _tabController;
+  late Future<List<OrderModel>> _ordersFuture;
+  List<OrderModel>? _currentOrders;
+  Timer? _refreshTimer;
+  bool _isInitialLoad = true;
 
-  Future<List<OrderModel>> fetchProducts(BuildContext context) async {
+  final List<String> _orderStatuses = [
+    'All',
+    'Paid',
+    'Processing',
+    'Completed',
+    'Cancelled',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _ordersFuture = fetchOrders(context);
+    _tabController = TabController(length: _orderStatuses.length, vsync: this);
+
+    _ordersFuture.then((orders) {
+      _currentOrders = orders;
+      _startRefreshTimer();
+    });
+  }
+
+  void _startRefreshTimer() {
+    _refreshTimer?.cancel();
+
+    _refreshTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      _refreshOrdersQuietly();
+    });
+  }
+
+  Future<void> _refreshOrdersQuietly() async {
+    try {
+      final newOrders = await fetchOrders(context);
+      if (mounted) {
+        setState(() {
+          _currentOrders = newOrders;
+        });
+      }
+    } catch (e) {
+      debugPrint('Background refresh error: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<List<OrderModel>> fetchOrders(BuildContext context) async {
     try {
       final authClient = AuthHttpClient(http.Client(), context);
 
@@ -138,9 +89,6 @@ class OrdersScreen extends StatelessWidget {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> res = json.decode(response.body);
-
-        debugPrint('Orders: ${res}');
-
         return (res['data'] as List?)
                 ?.map(
                     (json) => OrderModel.fromJson(json as Map<String, dynamic>))
@@ -153,13 +101,10 @@ class OrdersScreen extends StatelessWidget {
             'Failed to load orders, Status: ${response.statusCode}');
       }
     } on SocketException {
-      // Handle network issues like no internet
       throw Exception('No internet connection');
     } on http.ClientException catch (e) {
-      // Handle HTTP client issues
       throw Exception('HTTP error: $e');
     } catch (e) {
-      // Handle any other unexpected errors
       throw Exception('Unexpected error: $e');
     }
   }
@@ -167,70 +112,216 @@ class OrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Orders')),
+      appBar: AppBar(
+        title: const Text('Orders'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              padding: EdgeInsets.zero,
+              indicatorPadding: EdgeInsets.zero,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 16),
+              tabAlignment: TabAlignment.center,
+              tabs: _orderStatuses.map((status) => Tab(text: status)).toList(),
+            ),
+          ),
+        ),
+      ),
       body: FutureBuilder<List<OrderModel>>(
-        future: fetchProducts(context),
+        future: _isInitialLoad ? _ordersFuture : null,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          // Initial loading state
+          if (_isInitialLoad &&
+              snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          }
-
-          // If there's an error, show the error message
-          else if (snapshot.hasError) {
+          } else if (_isInitialLoad && snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
 
-          // If no data, display a message
-          else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          List<OrderModel> allOrders = _currentOrders ?? snapshot.data ?? [];
+
+          if (_isInitialLoad && allOrders.isNotEmpty) {
+            _isInitialLoad = false;
+          }
+
+          if (allOrders.isEmpty) {
             return const Center(child: Text('No orders found.'));
           }
 
-          final orders = snapshot.data!;
-          return ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final order = orders[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: GestureDetector(
-                  onTap: () => context.pushNamed(
-                    AppRoutes.orderDetails,
-                    extra: order,
-                    pathParameters: {'orderId': order.id.toString()},
-                  ),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Order Code: ${order.id}",
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
-                            Text(
-                              'Items: items',
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                        leading: SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: Image.network(
-                            'https://picsum.photos/200/300',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+          final Map<String, List<OrderModel>> ordersByStatus = {
+            'All': allOrders,
+            'Paid': [],
+            'Processing': [],
+            'Completed': [],
+            'Cancelled': [],
+          };
+
+          for (var status in _orderStatuses.where((s) => s != 'All')) {
+            switch (status) {
+              case 'Paid':
+                ordersByStatus[status] = allOrders
+                    .where((order) => order.orderStatus == "PAID")
+                    .toList();
+              case 'Processing':
+                ordersByStatus[status] = allOrders
+                    .where((order) =>
+                        order.orderStatus == "PARTIALLY_COMPLETED" ||
+                        order.orderStatus == "PICKUP")
+                    .toList();
+                break;
+              case 'Completed':
+                ordersByStatus[status] = allOrders
+                    .where((order) => order.orderStatus == "COMPLETED")
+                    .toList();
+                break;
+              case 'Cancelled':
+                ordersByStatus[status] = allOrders
+                    .where((order) => order.orderStatus == "CANCELLED")
+                    .toList();
+                break;
+            }
+          }
+
+          return TabBarView(
+            controller: _tabController,
+            children: _orderStatuses.map((status) {
+              return _buildOrdersList(ordersByStatus[status]!);
+            }).toList(),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildOrdersList(List<OrderModel> orders) {
+    if (orders.isEmpty) {
+      return const Center(child: Text('No orders in this category.'));
+    }
+
+    return ListView.builder(
+      itemCount: orders.length,
+      padding: const EdgeInsets.only(top: 8),
+      itemBuilder: (context, index) {
+        final order = orders[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: GestureDetector(
+            onTap: () {
+              if (order.orderStatus == "COMPLETED") {
+                context.pushNamed(
+                  AppRoutes.orderSummary,
+                  extra: order,
+                );
+              } else if (order.orderStatus != "UNPAID") {
+                context.pushNamed(
+                  AppRoutes.orderDetails,
+                  extra: order,
+                  pathParameters: {'orderId': order.id.toString()},
+                );
+              } else {
+                Get.snackbar(
+                  'Unpaid Order',
+                  'This order has not been paid for yet.',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.red,
+                );
+              }
+            },
+            child: Column(
+              children: [
+                ListTile(
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Order ID:${order.id} - ${order.orderStatus}",
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      Text(
+                        'Items: ${order.items.length}',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                  leading: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: Image.network(
+                      order.items.first.product.images?.first.url ??
+                          'https://picsum.photos/200/300',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class OrderSummaryScreen extends StatelessWidget {
+  final OrderModel order;
+
+  const OrderSummaryScreen({super.key, required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Order Summary'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Order ID: ${order.id}',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Status: ${order.orderStatus}',
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Items:',
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: order.items.length,
+                itemBuilder: (context, index) {
+                  final item = order.items[index];
+                  return ListTile(
+                    leading: Image.network(
+                      item.product.images != null &&
+                              item.product.images!.isNotEmpty
+                          ? item.product.images![0].url
+                          : 'https://via.placeholder.com/50',
+                      fit: BoxFit.cover,
+                      width: 50,
+                      height: 50,
+                    ),
+                    title: Text(item.product.name),
+                    subtitle: Text('Quantity: ${item.quantity}'),
+                    trailing: Text(
+                      formatCurrency(
+                          (item.price?.netPrice ?? 0) * item.quantity),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

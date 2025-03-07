@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:vendx/features/product/model/product.dart';
 import 'package:vendx/router/routes.dart';
 import 'package:vendx/utlis/constants/colors.dart';
-import 'package:vendx/utlis/constants/env.dart';
 import 'package:vendx/utlis/constants/images.dart';
 import 'package:vendx/utlis/helpers/currency_formatter.dart';
 
@@ -77,7 +76,7 @@ class ProductItemCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                formatCurrency(product.price.netPrice),
+                                formatCurrency(product.price?.netPrice ?? 0),
                                 style: Theme.of(context).textTheme.labelSmall,
                               ),
                               Container(

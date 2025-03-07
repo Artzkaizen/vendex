@@ -27,6 +27,8 @@ class AppRoutes {
   static const category = '/category/:id';
   static const orderDetails = '/order-details/:orderId';
 
+  static const orderSummary = '/order-summary';
+
   static const bottomNavRoutes = <BottomNavRoute>[
     BottomNavRoute(
         label: 'Home', icon: Icons.home_outlined, activeIcon: Icons.home),

@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:vendx/features/auth/view/screens/login.dart';
 import 'package:vendx/features/auth/view/screens/onboarding.dart';
 import 'package:vendx/features/auth/view/screens/signup.dart';
 import 'package:vendx/features/auth/view/widgets/auth_provider.dart';
-
 import 'package:vendx/features/cart/view/screens/cart.dart';
 import 'package:vendx/features/cart/view/screens/payment_success.dart';
-import 'package:vendx/features/home/view/screens/user.dart';
-import 'package:vendx/features/orders/model/order.dart';
-import 'package:vendx/features/orders/view/screens/orders.dart';
-
-import 'package:vendx/features/orders/view/screens/new.dart';
-import 'package:vendx/features/product/model/product.dart';
-
 import 'package:vendx/features/home/view/screens/favourites.dart';
 import 'package:vendx/features/home/view/screens/home.dart';
-
 import 'package:vendx/features/home/view/screens/product_screen.dart';
-import 'package:vendx/features/home/view/screens/profile.dart';
 import 'package:vendx/features/home/view/screens/search_screen.dart';
-
+import 'package:vendx/features/home/view/screens/user.dart';
+import 'package:vendx/features/orders/model/order.dart';
+import 'package:vendx/features/orders/view/screens/new.dart';
+import 'package:vendx/features/orders/view/screens/orders.dart';
+import 'package:vendx/features/product/model/product.dart';
 import 'package:vendx/router/routes.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -116,7 +109,7 @@ final class AppRouter {
       GoRoute(
         name: AppRoutes.search,
         path: AppRoutes.search,
-        builder: (context, state) => SearchScreen(),
+        builder: (context, state) => const SearchScreen(),
       ),
       GoRoute(
         name: AppRoutes.success,
@@ -154,13 +147,21 @@ final class AppRouter {
             routes: [
               GoRoute(
                   path: AppRoutes.orders,
-                  builder: (context, state) => OrdersScreen(),
+                  builder: (context, state) => const OrdersScreen(),
                   routes: [
                     GoRoute(
                       parentNavigatorKey: _rootNavigatorKey,
                       name: AppRoutes.orderDetails,
                       path: AppRoutes.orderDetails,
                       builder: (context, state) => SingleOrderScreen(
+                        order: state.extra as OrderModel,
+                      ),
+                    ),
+                    GoRoute(
+                      parentNavigatorKey: _rootNavigatorKey,
+                      name: AppRoutes.orderSummary,
+                      path: AppRoutes.orderSummary,
+                      builder: (context, state) => OrderSummaryScreen(
                         order: state.extra as OrderModel,
                       ),
                     )
